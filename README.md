@@ -1,10 +1,68 @@
-# Personalized-Medical-Diagnostic-pathways
-ClinicalPath-AI: Dynamic Diagnostic Pathway Optimization via RL🩺 OverviewClinicalPath-AI is an advanced decision-support system that personalizes the diagnostic journey for cardiovascular patients. Instead of following a linear, static set of tests, this system uses Reinforcement Learning (DQN) and Sparse Autoencoders (SAE) to determine the most efficient sequence of medical examinations.The goal is to reach a high-confidence diagnosis (Healthy, CAD, HF, or Stroke) using the minimum number of tests necessary, reducing patient wait times and healthcare costs.🚀 The Clinical Pipeline1. Patient Fingerprinting (SAE)The system begins by ingesting 11 initial vitals (Age, BP, BMI, etc.). A Sparse Autoencoder compresses these into a 4-dimensional "Clinical Fingerprint." This latent representation captures the patient's underlying health state more effectively than raw data.2. Adaptive Sequencing (MAB/DQN)The core of the "Pathway" is a Deep Q-Network agent that treats diagnosis like a strategic game:State Space: The patient's fingerprint + a dynamic log of completed test results.Action Space: Choosing between 9 diagnostic tests (e.g., Troponin, Echo, Stress Test) or committing to one of 4 final diagnoses.Reward Logic: The agent is penalized for every test ordered (-1) but heavily rewarded for an accurate final diagnosis (+50). This forces the model to learn the shortest path to accuracy.📂 Project StructureFileRole in the Pathwayapp.pyDeployment: Flask web interface for real-time diagnostic simulation.mab_environment.pyLogic: The "Rulebook" defining medical states and sequencing rewards.build_autoencoder.pyFeature Engineering: Training the SAE to generate patient fingerprints.run_diagnostic_final.pyInference: Terminal-based execution of the full diagnostic pathway.generate_tsne_plot.pyVisualization: t-SNE mapping of how the model clusters different diseases.📊 Performance & Clinical ImpactAccuracy: >95% success rate in matching ground-truth clinical diagnoses.Efficiency: Average test reduction of ~30-40% compared to standard "full panel" testing.Interpretability: Uses t-SNE visualizations to verify that the autoencoder is correctly separating different clinical conditions in the latent space.🛠️ Quick StartInstallationBash# Clone the repository
-git clone https://github.com/yourusername/ClinicalPath-AI.git
-cd ClinicalPath-AI
+# SmartPath: Reinforcement Learning for Adaptive Medical Diagnostic Pathways
 
-# Install required ML libraries
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Status: Patent Pending](https://img.shields.io/badge/IP-Patent_Disclosure-red.svg)](#)
+
+## 📌 Executive Summary
+It is an AI-driven Clinical Decision Support System (CDSS) that personalizes the diagnostic journey for cardiovascular patients. Unlike traditional linear protocols, this system models the diagnostic process as a **Sequential Decision Problem**. 
+
+By utilizing a **Multi-Armed Bandit (MAB)** framework integrated with **Deep Q-Learning (DQN)**, the system dynamically selects the most informative next test for a patient, maximizing diagnostic accuracy while minimizing unnecessary medical procedures and costs.
+
+
+
+---
+
+## 🏗️ Technical Architecture
+
+The system operates through a dual-stage machine learning pipeline:
+
+### 1. Patient State Encoding (Sparse Autoencoder)
+Initial clinical data (11 features: age, BP, BMI, etc.) is compressed into a 4-dimensional **"Clinical Fingerprint"** using a **Sparse Autoencoder (SAE)**. This removes noise and extracts the latent physiological state of the patient.
+* **Model:** MLPRegressor (Neural Network)
+* **Reduction:** 11-Dimensional Raw Data → 4-Dimensional Latent Space
+
+### 2. Sequential Decision Engine (DQN)
+A Deep Q-Network (DQN) agent navigates the diagnostic pathway. It observes the patient fingerprint and the results of previous tests to decide:
+* **Perform a Test:** Choose from 9 diagnostic tests (Troponin, Echo, BNP, etc.).
+* **Final Diagnosis:** Commit to a diagnosis (Healthy, CAD, Heart Failure, or Stroke).
+
+
+
+---
+
+## 🚀 Key Features
+* **Dynamic Test Selection:** The agent learns to prioritize tests based on their "information gain" per specific patient profile.
+* **Reward Shaping:** Optimized with a specialized reward function ($+50$ for correct diagnosis, $-1$ per test performed) to ensure efficiency.
+* **Real-time Interface:** A Flask-based web dashboard for clinicians to simulate and monitor diagnostic pathways.
+* **Explainability:** Includes t-SNE visualization scripts to audit how the model clusters clinical states in the latent space.
+
+---
+
+## 📂 Project Structure
+* `app.py`: Flask web application for real-time diagnostic simulation.
+* `build_autoencoder.py`: Script to train the SAE and generate patient fingerprints.
+* `mab_environment.py`: Custom Gymnasium-style environment defining the clinical "rules."
+* `run_diagnostic_final.py`: Terminal-based interface for end-to-end inference.
+* `generate_results_for_ppt.py`: Benchmarking script for accuracy and test-reduction metrics.
+* `generate_tsne_plot.py`: Visualization tool for latent space analysis.
+
+---
+
+## 📊 Performance Metrics
+* **Accuracy:** >95% success rate in matching ground-truth clinical outcomes.
+* **Efficiency:** 30–40% reduction in diagnostic tests compared to standard exhaustive panels.
+* **Clustering:** t-SNE analysis confirms distinct clinical separation within the 4D latent space.
+
+
+
+---
+
+## 🛠️ Installation & Usage
+
+### 1. Environment Setup
+```bash
+python -m venv my_ml_env
+source my_ml_env/bin/activate  # Windows: .\my_ml_env\Scripts\activate
 pip install torch flask scikit-learn pandas joblib matplotlib seaborn
-ExecutionInitialize the Patient Analyzer:Bashpython build_autoencoder.py
-Launch the Clinical Dashboard:Bashpython app.py
-Navigate to http://127.0.0.1:5000 to interact with the pathway.📜 Intellectual Property & AuthorshipThis project is part of a formal patent disclosure:"System and Method for Personalized Diagnostic Sequencing Using Sparse Autoencoded Clinical State Spaces and Multi-Armed Bandit Decision Frameworks"Authors: Bhupinder Singh, Himanshu Fulera, Ankit Kumar, and Takudzwa Muzovaka.
