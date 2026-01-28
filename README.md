@@ -1,68 +1,65 @@
 # SmartPath: Reinforcement Learning for Adaptive Medical Diagnostic Pathways
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Status: Patent Pending](https://img.shields.io/badge/Intellectual_Property-Patent_Disclosure-red.svg)](#)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Status: Patent Pending](https://img.shields.io/badge/IP-Patent_Disclosure-red.svg)](#)
+[![Framework: PyTorch](https://img.shields.io/badge/Framework-PyTorch-EE4C2C?logo=pytorch)](https://pytorch.org/)
 
-## 📌 Executive Summary
-It is an AI-driven Clinical Decision Support System (CDSS) that personalizes the diagnostic journey for cardiovascular patients. Unlike traditional linear protocols, this system models the diagnostic process as a **Sequential Decision Problem**. 
+## 🩺 Project Overview
+**SmartPath** is a clinical decision-support system that optimizes the diagnostic journey for cardiovascular patients. Traditional medical pathways are often static; SmartPath uses **Reinforcement Learning** to treat diagnosis as a dynamic "game" where the goal is to reach a correct diagnosis using the fewest, most effective tests possible.
 
-By utilizing a **Multi-Armed Bandit (MAB)** framework integrated with **Deep Q-Learning (DQN)**, the system dynamically selects the most informative next test for a patient, maximizing diagnostic accuracy while minimizing unnecessary medical procedures and costs.
-
-
-
----
-
-## 🏗️ Technical Architecture
-
-The system operates through a dual-stage machine learning pipeline:
-
-### 1. Patient State Encoding (Sparse Autoencoder)
-Initial clinical data (11 features: age, BP, BMI, etc.) is compressed into a 4-dimensional **"Clinical Fingerprint"** using a **Sparse Autoencoder (SAE)**. This removes noise and extracts the latent physiological state of the patient.
-* **Model:** MLPRegressor (Neural Network)
-* **Reduction:** 11-Dimensional Raw Data → 4-Dimensional Latent Space
-
-### 2. Sequential Decision Engine (DQN)
-A Deep Q-Network (DQN) agent navigates the diagnostic pathway. It observes the patient fingerprint and the results of previous tests to decide:
-* **Perform a Test:** Choose from 9 diagnostic tests (Troponin, Echo, BNP, etc.).
-* **Final Diagnosis:** Commit to a diagnosis (Healthy, CAD, Heart Failure, or Stroke).
+### The Innovation
+* **Sparse Autoencoder (SAE):** Compresses 11 patient vitals into a 4D "Clinical Fingerprint."
+* **Deep Q-Network (DQN):** An RL agent that selects the "Next Best Action" (a medical test or a final diagnosis) based on the patient's state.
+* **Efficiency Logic:** The system is penalized for every test ordered (-1) and rewarded for accuracy (+50), learning to prioritize high-impact diagnostic tests.
 
 
 
 ---
 
-## 🚀 Key Features
-* **Dynamic Test Selection:** The agent learns to prioritize tests based on their "information gain" per specific patient profile.
-* **Reward Shaping:** Optimized with a specialized reward function ($+50$ for correct diagnosis, $-1$ per test performed) to ensure efficiency.
-* **Real-time Interface:** A Flask-based web dashboard for clinicians to simulate and monitor diagnostic pathways.
-* **Explainability:** Includes t-SNE visualization scripts to audit how the model clusters clinical states in the latent space.
+## 🏗️ The Training & Execution Pipeline
+
+To fully replicate this project, the files must be executed in the following order:
+
+### 1. Patient State Compression (`build_autoencoder.py`)
+This script trains the "Patient Analyzer." It takes raw CSV data and learns the latent representation of patient health.
+* **Input:** `heart_diagnostic_10k_balanced_clean.csv`
+* **Run:** `python build_autoencoder.py`
+* **Output:** `sae_autoencoder.joblib`, `sae_scaler.joblib`
+
+### 2. Environment Setup (`mab_environment.py`)
+This is the "Rulebook" for the training process. It defines the rewards, penalties, and medical logic.
+* **Note:** This file is imported by the trainer, but can be run standalone to verify environment logic.
+* **Run:** `python mab_environment.py`
+
+### 3. Agent Training (`train_mab_agent_pytorch.py`)
+This script trains the DQN agent (the brain) through thousands of simulated diagnostic trials.
+* **Run:** `python train_mab_agent_pytorch.py`
+* **Output:** `mab_agent_pytorch.pth` (The trained weights for the model).
+
+
+
+### 4. Deployment & Live Interface (`app.py`)
+Launch the Flask web dashboard to interact with the trained model in real-time.
+* **Run:** `python app.py`
+* **Access:** Open `http://127.0.0.1:5000` in your browser.
 
 ---
 
-## 📂 Project Structure
-* `app.py`: Flask web application for real-time diagnostic simulation.
-* `build_autoencoder.py`: Script to train the SAE and generate patient fingerprints.
-* `mab_environment.py`: Custom Gymnasium-style environment defining the clinical "rules."
-* `run_diagnostic_final.py`: Terminal-based interface for end-to-end inference.
-* `generate_results_for_ppt.py`: Benchmarking script for accuracy and test-reduction metrics.
-* `generate_tsne_plot.py`: Visualization tool for latent space analysis.
-
----
-
-## 📊 Performance Metrics
-* **Accuracy:** >95% success rate in matching ground-truth clinical outcomes.
-* **Efficiency:** 30–40% reduction in diagnostic tests compared to standard exhaustive panels.
-* **Clustering:** t-SNE analysis confirms distinct clinical separation within the 4D latent space.
+## 📊 Technical Features
+* **State Space:** 13-Dimensional (4 Fingerprint features + 9 Test result slots).
+* **Reward Function:** Designed to balance diagnostic speed vs. accuracy.
+* **Visualization:** `generate_tsne_plot.py` creates t-SNE visualizations to prove the SAE successfully clusters different diseases.
+* **Reporting:** `generate_results_for_ppt.py` provides accuracy and test-reduction metrics.
 
 
 
 ---
 
-## 🛠️ Installation & Usage
-
-### 1. Environment Setup
+## 🛠️ Installation
 ```bash
+# Setup Environment
 python -m venv my_ml_env
-source my_ml_env/bin/activate  # Windows: .\my_ml_env\Scripts\activate
+source my_ml_env/bin/activate # Windows: .\my_ml_env\Scripts\activate
+
+# Install Dependencies
 pip install torch flask scikit-learn pandas joblib matplotlib seaborn
