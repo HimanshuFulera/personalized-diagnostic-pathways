@@ -1,8 +1,6 @@
-torch
-flask
-scikit-learn
-pandas
+Flask
+gunicorn
 numpy
+scikit-learn
 joblib
-matplotlib
-seaborn
+torch
